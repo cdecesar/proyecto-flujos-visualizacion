@@ -15,7 +15,7 @@ while True:
     sector = input('Introduzca el sector a analizar: ')
     if sector != 'Ya':
         sectores.append(sector)
-        codigo_mapa += sector + '_'
+        codigo_mapa += sector + '-'
     else:
         codigo_mapa = codigo_mapa[:-1]
         break
