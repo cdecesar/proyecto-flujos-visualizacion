@@ -47,7 +47,6 @@ tile_layer = folium.TileLayer(
 )
 
 tile_layer.add_to(mapa)
-path = 'xd2.html'
 
 folium.Polygon(lista_coordenadas,
                color="black",
@@ -72,4 +71,4 @@ for i in json_flujos:
 
 folium.LayerControl().add_to(mapa)
 
-auto_open(path, mapa)
+auto_open(sector, mapa)

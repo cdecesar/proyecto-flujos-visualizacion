@@ -399,7 +399,8 @@ def create_popup_info(data, id_flujo, aeronaves_flujo):
 
     return html
 
-def auto_open(path, mapa):
+def auto_open(sector, mapa):
+    path = 'Mapa-' + sector + '.html'
     html_page = f'{path}'
     mapa.save(html_page)
     new = 2
