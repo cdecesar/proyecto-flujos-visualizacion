@@ -1,5 +1,4 @@
 import random
-import webbrowser
 import folium
 import re
 import json
