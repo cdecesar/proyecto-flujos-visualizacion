@@ -1,12 +1,13 @@
-import random
-import folium
 import re
 import json
 import pandas
+import random
+import folium
+import shutil
 import pathlib
 import webbrowser
 from shapely.geometry import Polygon
-from funciones import obtener_poligono, obtener_datos_poligono, create_popup_info, auto_open
+from funciones import obtener_poligono, obtener_datos_poligono, create_popup_info
 
 
 class Visualizacion():
@@ -45,7 +46,7 @@ class Visualizacion():
             self.json_flujos = json.load(f6)
         f6.close()
 
-        with open(self.FILES_PATH + '\\JSON_Cargados\\Pamplona\\Asociacion2_' + self.sector[0] + '.json', "r") as f6:
+        with open(self.FILES_PATH + '\\Carpeta_JSON\\Asociacion2_' + self.sector[0] + '.json', "r") as f6:
             self.json_aeronaves = json.load(f6)
         f6.close()
 
@@ -105,12 +106,11 @@ class Visualizacion():
         return self.sector[0]
 
     def mostrar(self, nombre):
-        path = 'Mapa-' + nombre + '.html'
-        html_page = f'{path}'
+        path = '\\Mapas\\Mapa-' + nombre + '.html'
+        html_page = f'{self.FILES_PATH + path}'
         self.mapa.save(html_page)
         new = 2
         webbrowser.open(html_page, new=new)
-
 
     def cargar_varios_mapas(self):
 

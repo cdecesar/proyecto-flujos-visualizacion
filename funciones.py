@@ -1,8 +1,10 @@
 import re
+import pathlib
 import webbrowser
 import geopy
 from geopy import distance
 from shapely.geometry import Point, LineString, box
+
 
 def get_nivel(dato, lista):
     '''
@@ -399,9 +401,9 @@ def create_popup_info(data, id_flujo, aeronaves_flujo):
 
     return html
 
-def auto_open(sector, mapa):
-    path = 'Mapa-' + sector + '.html'
-    html_page = f'{path}'
-    mapa.save(html_page)
-    new = 2
-    webbrowser.open(html_page, new=new)
+'''import io
+from PIL import Image
+
+img_data = m._to_png(5)
+img = Image.open(io.BytesIO(img_data))
+img.save('image.png')'''
