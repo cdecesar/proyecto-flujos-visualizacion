@@ -10,7 +10,7 @@ from funciones import obtener_poligono, obtener_datos_poligono, create_popup_inf
 
 
 class Visualizacion():
-    def __init__(self, sector):
+    def __init__(self, sector=None):
 
         if isinstance(sector, str):
             self.sector = []
@@ -18,10 +18,19 @@ class Visualizacion():
         elif isinstance(sector, list):
             self.sector = sector
         else:
-            s = input('Introduzca el sector a analizar: ')
-
             self.sector = []
-            self.sector.append(s)
+            eleccion = input('Para estudiar un unico sector introduzca "1": \n'
+                             'Para analizar varios sectores juntos introduzca "2": \n')
+            if eleccion == '1':
+                s = input('Introduzca el sector a analizar: ')
+                self.sector.append(s)
+            else:
+                while True:
+                    s = input('Introduzca el sector a analizar: ')
+                    if s != 'Ya':
+                        self.sector.append(s)
+                    else:
+                        break
 
         self.FILES_PATH = str(pathlib.Path(__file__).parent.resolve())
 
@@ -171,3 +180,6 @@ class Visualizacion():
 
         folium.LayerControl().add_to(self.mapa)
         return codigo_mapa
+
+if __name__ == "__main__":
+    app = Visualizacion()
