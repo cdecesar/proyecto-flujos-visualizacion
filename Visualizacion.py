@@ -151,7 +151,7 @@ class Visualizacion():
                 json_flujos = json.load(f6)
             f6.close()
 
-            with open(self.FILES_PATH + '\\JSON_Cargados\\' + codigos_sectores.get(j) + '\\Asociacion2_' + j + '.json',
+            with open(self.FILES_PATH + '\\Carpeta_JSON\\Asociacion2_' + j + '.json',
                       "r") as f6:
                 json_aeronaves = json.load(f6)
             f6.close()
