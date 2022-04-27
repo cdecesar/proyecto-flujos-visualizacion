@@ -180,6 +180,7 @@ class VentanaFlujos():
         self.datos_json = self.cargar_json()
         self.frame_f1 = Label(self.root, text='Flujos', font='arial 20 bold', width=30,
                               pady=50)
+
         self.frame_f1.grid(row=0, column=0, columnspan=2)
 
         limite = len(self.datos_json.keys())
