@@ -10,6 +10,18 @@ lista_ventanas = []
 global contador_ventanas
 contador_ventanas = 1
 
+global abierto
+abierto = {'LECMPAU': False,
+           'GCCCRNE': False,
+           'LECBP2R': False,
+           'LECMCJI': False,
+           'LECMCJL': False,
+           'LECMCJU': False,
+           'LECMDGU': False,
+           'LECMTLI': False,
+           'LECMTLU': False,
+           'LECMTZI': False}
+
 class PopUp():
     def __init__(self, root, mensaje):
         self.top = Toplevel(root)
@@ -449,8 +461,13 @@ class VentanaIndividual():
         extra.grid(row=((len(self.sectores) // 3) + 2), column=0)
 
     def siguiente(self, sector):
-        global contador_ventanas
-        self.mapa_sector = Visualizacion(sector)
+        global contador_ventanas, abierto
+        s = abierto.get(sector)
+
+        if s == False:
+            self.mapa_sector = Visualizacion(sector)
+            abierto[sector] = True
+
         ventana_flujos = VentanaFlujos(lista_ventanas[0].root, contador_ventanas, sector)
 
         lista_ventanas.append(ventana_flujos)
@@ -459,8 +476,7 @@ class VentanaIndividual():
             if b['text'] == sector:
                 b["state"] = "disabled"
 
-        lista_ventanas[0].root.wm_attributes("-topmost", False)
-        self.root.wm_attributes("-topmost", False)
+        self.hide()
         self.root.update()
         lista_ventanas[0].root.update()
 

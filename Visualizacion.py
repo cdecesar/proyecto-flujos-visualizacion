@@ -43,6 +43,7 @@ class Visualizacion():
         else:
             self.mostrar(self.cargar_varios_mapas())
 
+
     def cargar_info_un_mapa(self):
         with open(self.FILES_PATH + '\\Carpeta_JSON\\Clusterizados2_' + self.sector[0] + '.json', "r") as f6:
             self.json_flujos = json.load(f6)

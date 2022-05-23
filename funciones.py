@@ -394,7 +394,6 @@ def create_popup_info(data, id_flujo, aeronaves_flujo):
             </table>
         </html>      
         """
-
     return html
 
 '''import io
