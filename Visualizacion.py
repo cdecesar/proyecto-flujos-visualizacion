@@ -13,6 +13,8 @@ from funciones import obtener_poligono, obtener_datos_poligono, create_popup_inf
 class Visualizacion():
     def __init__(self, sector=None):
 
+        self.colores = ['#94c4fe', '#150be6', '#0080ff','#4d59fb']
+
         if isinstance(sector, str):
             self.sector = []
             self.sector.append(sector)
@@ -58,6 +60,41 @@ class Visualizacion():
         self.lista_coordenadas = obtener_poligono(coordenadas_poligono_raw)
         self.poligono1 = Polygon(self.lista_coordenadas)
 
+        self.organizar_vuelos()
+
+    def organizar_vuelos(self):
+        self.lista_ordenada_naves = []
+        for i in self.json_aeronaves:
+            self.lista_ordenada_naves.append(len(self.json_aeronaves.get(i)))
+
+        self.max = max(self.lista_ordenada_naves)
+
+    def calcular_grosor(self, flujo):
+        naves = self.json_aeronaves.get(flujo)
+
+        ratio = len(naves)/self.max
+
+        if ratio <= 1 and ratio >= 0.75:
+            return 5
+        elif ratio < 0.75 and ratio >= 0.5:
+            return 4
+        elif ratio < 0.5 and ratio >= 0.25:
+            return 3
+        else:
+            return 2
+
+    def calcular_color(self, flujo):
+
+        grosor = self.calcular_grosor(flujo)
+        if grosor == 5:
+            return self.colores[0]
+        elif grosor == 4:
+            return self.colores[1]
+        elif grosor == 3:
+            return self.colores[2]
+        else:
+            return self.colores[3]
+
     def cargar_un_mapa(self):
 
         centro = self.poligono1.centroid
@@ -65,8 +102,8 @@ class Visualizacion():
         lat = centro.bounds[0]
 
         MAPA = 'https://api.mapbox.com/styles/v1/mapbox/light-v10/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoiYmVsc2FyIiwiYSI6ImNsMWtnd3UyaTAwZGkzYm8zeng1ZHF6YXIifQ.zjyS9oluZL2c0sCP4krWFw'
-        colores = ['green', 'blue', 'red', 'yellow', 'black']
-
+        #colores = ['green', 'blue', 'red', 'yellow', 'black']
+        colores = ['#0080ff', '#150be6', '#94c4fe']
 
         self.mapa = folium.Map(location=[lat, lon], tiles= None, zoom_start=8)
 
@@ -97,7 +134,7 @@ class Visualizacion():
             popup = folium.Popup(iframe, min_width=700, max_width=700)
 
             folium.PolyLine([(datos[0][0][1], datos[0][0][0]), (datos[0][1][1], datos[0][1][0])],
-                            color=random.choice(colores), weight=random.randint(1, 4),
+                            color=self.calcular_color(i), weight=self.calcular_grosor(i),
                             tooltip='Flujo: ' + str(i), popup=popup).add_to(grupo_leyenda)
 
             grupo_leyenda.add_to(self.mapa)
@@ -173,7 +210,7 @@ class Visualizacion():
                 popup = folium.Popup(iframe, min_width=700, max_width=700)
 
                 folium.PolyLine([(datos[0][0][1], datos[0][0][0]), (datos[0][1][1], datos[0][1][0])],
-                                color=random.choice(colores), weight=random.randint(1, 4),
+                                color=self.calcular_color(i), weight=self.calcular_grosor(i),
                                 tooltip='Flujo: ' + str(i), popup=popup).add_to(grupo_leyenda)
 
             grupo_leyenda.add_to(self.mapa)

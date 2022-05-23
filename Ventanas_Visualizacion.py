@@ -1,10 +1,11 @@
-import os, re, json, glob, pathlib, random
+import os, re, json, glob, pathlib, random, math
 from tkinter import *
 from Visualizacion import Visualizacion
 from PIL import ImageTk, Image
 
 FILES_PATH = str(pathlib.Path(__file__).parent.resolve())
-
+COLOR_TITULO = '#020c80'
+COLOR_FONDO = '#94c4fe'
 lista_ventanas = []
 global contador_ventanas
 contador_ventanas = 1
@@ -44,6 +45,7 @@ class VentanaInformacion():
         self.flujo = flujo
         self.tipo = tipo
         self.sector = sector
+        self.modo = 4
 
         self.iniciar_root()
         self.construir()
@@ -70,8 +72,8 @@ class VentanaInformacion():
 
         if self.tipo == 1:
             self.root.resizable(width=False, height=False)
-
-            self.frame_f1 = Label(self.root, text=self.flujo, font='arial 20 bold', width=30)
+            self.root.configure(background=COLOR_FONDO)
+            self.frame_f1 = Label(self.root, text=self.flujo, font='arial 20 bold', width=30, fg='white', bg=COLOR_TITULO)
             self.frame_f1.grid(row=0, column=0, columnspan=2)
 
             datos = self.json_flujos.get(self.flujo)
@@ -86,48 +88,40 @@ class VentanaInformacion():
             if limite > 8:
                 limite = 8
 
-            l1 = Label(self.root, text='PUNTO DE ENTRADA', font='arial 10 bold', pady=2, padx=2)
+            l1 = Label(self.root, text='PUNTO DE ENTRADA', font='arial 12 bold', pady=2, padx=2, fg='white', bg='#94c4fe')
             l1.grid(row=1, column=0)
 
-            l2 = Label(self.root, text='PUNTO DE SALIDA', font='arial 10 bold', pady=2, padx=2)
+            l2 = Label(self.root, text='PUNTO DE SALIDA', font='arial 12 bold', pady=2, padx=2, fg='white', bg='#94c4fe')
             l2.grid(row=2, column=0)
 
-            l3 = Label(self.root, text='EVOLUCIOB NIVELES VUELO', font='arial 10 bold', pady=2, padx=2)
+            l3 = Label(self.root, text='EVOLUCIOB NIVELES VUELO', font='arial 12 bold', pady=2, padx=2, fg='white', bg='#94c4fe')
             l3.grid(row=3, column=0)
 
-            l4 = Label(self.root, text='IMPACTO MEDIO', font='arial 10 bold', pady=2, padx=2)
-            l4.grid(row=4, column=0)
+            l5 = Label(self.root, text='NUMERO DE AERONAVES', font='arial 12 bold', pady=2, padx=2, fg='white', bg='#94c4fe')
+            l5.grid(row=4, column=0)
 
-            l5 = Label(self.root, text='NUMERO DE AERONAVES', font='arial 10 bold', pady=2, padx=2)
-            l5.grid(row=5, column=0)
-
-            l6 = Label(self.root, text='COSAS', font='arial 10 bold', pady=2, padx=2)
-            l6.grid(row=6, column=0)
-
-            l7 = Label(self.root, text=str(punto1[1])[0:limite] + """ ; """ + str(punto1[0])[0:limite], font='arial 10 bold', pady=2, padx=2)
+            l7 = Label(self.root, text=str(punto1[1])[0:limite] + """ ; """ + str(punto1[0])[0:limite], font='arial 12 bold', pady=2, padx=2, fg='white', bg='#94c4fe')
             l7.grid(row=1, column=1)
 
-            l8 = Label(self.root, text=str(punto2[1])[0:limite]+ """ ; """ + str(punto2[0])[0:limite], font='arial 10 bold', pady=2, padx=2)
+            l8 = Label(self.root, text=str(punto2[1])[0:limite]+ """ ; """ + str(punto2[0])[0:limite], font='arial 12 bold', pady=2, padx=2, fg='white', bg='#94c4fe')
             l8.grid(row=2, column=1)
 
-            l9 = Label(self.root, text=levels[0] + """ ; """ + levels[1], font='arial 10 bold', pady=2, padx=2)
+            l9 = Label(self.root, text=levels[0] + """ ; """ + levels[1], font='arial 12 bold', pady=2, padx=2, fg='white', bg='#94c4fe')
             l9.grid(row=3, column=1)
 
-            l10 = Label(self.root, text=levels[0] + """ ; """ + levels[1], font='arial 10 bold', pady=2, padx=2)
-            l10.grid(row=4, column=1)
-
-            l11 = Label(self.root, text=str(len(naves)), font='arial 10 bold', pady=2, padx=2)
-            l11.grid(row=5, column=1)
-
-            l12 = Label(self.root, text='MAS COSAS', font='arial 10 bold', pady=2, padx=2)
-            l12.grid(row=6, column=1)
+            l11 = Label(self.root, text=str(len(naves)), font='arial 12 bold', pady=2, padx=2, fg='white', bg='#94c4fe')
+            l11.grid(row=4, column=1)
 
         else:
             self.root.bind('<Configure>', self.resizer)
             self.im = Image.open(FILES_PATH + "\\Images\\barras.png")
-            self.img = ImageTk.PhotoImage(self.im)
-            self.w = int(self.img.width())
-            self.h = int(self.img.height())
+
+            img = ImageTk.PhotoImage(self.im)
+            self.w = int(math.floor(img.width()/1.7))
+            self.h = int(math.floor(img.height())/1.7)
+
+            ajustada = self.im.resize((self.w, self.h))
+            self.img = ImageTk.PhotoImage(ajustada)
 
             # create label and add resize image
             self.label1 = Label(master=self.root, image=self.img)
@@ -145,21 +139,30 @@ class VentanaInformacion():
         self.label1.image = new_bg
 
     def cerrar(self):
-        contador = 0
-        for v in lista_ventanas:
-            if v.id == self.id_padre:
-                break
-            contador += 1
-
         self.root.destroy()
+        lista_ventanas.pop(len(lista_ventanas) - 1)
+        contador = 0
+        encontrado = False
+        for v in lista_ventanas:
+            if isinstance(v, VentanaFlujos):
+                if v.id == self.id_padre:
+                    encontrado = True
+                    break
 
-        lista_ventanas[contador].show()
+                else:
+                    contador += 1
+            else:
+                contador += 1
+
+        if encontrado:
+            lista_ventanas[contador].show()
 
 class VentanaFlujos():
     def __init__(self, master, identificador, sector):
         self.root = Toplevel(master)
         self.id = identificador
         self.sector = sector
+        self.modo = 3
 
         self.iniciar_root()
         self.construir()
@@ -179,24 +182,19 @@ class VentanaFlujos():
     def construir(self):
         self.datos_json = self.cargar_json()
         self.frame_f1 = Label(self.root, text='Flujos', font='arial 20 bold', width=30,
-                              pady=50)
+                              pady=50, bg=COLOR_TITULO, fg='white')
 
         self.frame_f1.grid(row=0, column=0, columnspan=2)
-
+        self.root.configure(background=COLOR_TITULO)
         limite = len(self.datos_json.keys())
         fila = 1
         columna = 0
         for f in self.datos_json.keys():
+            self.e = Button(self.root, text=f, font='arial 12 bold',
+                                   padx=5, borderwidth=5,
+                                   width=15)
+            self.e["command"] = lambda s = f: self.informar(s)
 
-            a = random.choice([1,2])
-            if a == 1:
-                self.e = Button(self.root, text=f, font='arial 10 bold',
-                                       padx=5, borderwidth=5,
-                                       width=15)
-                self.e["command"] = lambda s = f: self.informar(s)
-            else:
-                self.e = Label(self.root, text=f, font='arial 10 bold',
-                                       padx=5, width=15)
             self.e.grid(row=fila, column=columna)
 
             if columna == 1:
@@ -208,16 +206,18 @@ class VentanaFlujos():
 
             if limite == 0:
                 if len(self.datos_json.keys()) % 2 == 1:
-                    extra = Label(self.root, text='\n\n\n\n')
+                    extra = Label(self.root, text='\n\n\n\n', bg=COLOR_TITULO)
                     extra.grid(row=fila + 1, column=0)
                 else:
-                    extra = Label(self.root, text='\n', pady=5)
+                    extra = Label(self.root, text='\n', pady=5, bg=COLOR_TITULO)
                     extra.grid(row=fila, column=0)
 
     def informar(self, flujo):
         self.hide()
         v_infobasica = VentanaInformacion(lista_ventanas[0].root, self.id, flujo, 1, self.sector)
-        v_infografica = VentanaInformacion(lista_ventanas[0].root, self.id, flujo, 2, self.sector)
+        #v_infografica = VentanaInformacion(lista_ventanas[0].root, self.id, flujo, 2, self.sector)
+        #lista_ventanas.append(v_infografica)
+        lista_ventanas.append(v_infobasica)
 
 
     def hide(self):
@@ -239,6 +239,7 @@ class VentanaFlujos():
         for b in botones:
             if b['text'] == self.sector:
                 b["state"] = "normal"
+        lista_ventanas[contador].show()
 
         contador = 0
         for v in lista_ventanas:
@@ -247,6 +248,16 @@ class VentanaFlujos():
             contador += 1
 
         lista_ventanas.pop(contador)
+
+        for i in range(1):
+            contador = 0
+            for v in lista_ventanas:
+                if isinstance(v, VentanaInformacion):
+                    if v.id_padre == self.id:
+                        lista_ventanas[contador].root.destroy()
+                        lista_ventanas.pop(contador)
+                        break
+                contador += 1
 
 class VentanaConjunto():
     def __init__(self, master, identificador):
@@ -262,7 +273,7 @@ class VentanaConjunto():
     def iniciar_root(self):
         # self.root.geometry('600x500')
         self.root.resizable(width=False, height=False)
-        self.root.wm_attributes("-topmost", True)
+        self.root.wm_attributes("-topmost", False)
         self.root.title("Análisis individual")
         self.root.protocol("WM_DELETE_WINDOW", self.cerrar)
 
@@ -389,7 +400,7 @@ class VentanaIndividual():
 
     def iniciar_root(self):
         self.root.resizable(width=False, height=False)
-        self.root.wm_attributes("-topmost", True)
+        self.root.wm_attributes("-topmost", False)
         self.root.title("Análisis individual")
         self.root.protocol("WM_DELETE_WINDOW", self.cerrar)
 
@@ -398,11 +409,10 @@ class VentanaIndividual():
         for f in all_files:
             if len(re.findall('Clusterizados2_', f)) == 1:
                 self.sectores.append(re.split('Clusterizados2_', re.split('\.', f)[0])[-1])
-        print(self.sectores)
 
     def construir(self):
-
-        self.frame_f1 = Label(self.root, text='Indique el sector que quiere analizar', font='arial 20 bold', width=50, pady=50)
+        self.root.configure(background=COLOR_TITULO)
+        self.frame_f1 = Label(self.root, text='Indique el sector que quiere analizar', font='arial 20 bold', width=50, pady=50, fg='white', bg=COLOR_TITULO)
         self.frame_f1.grid(row=0, column=0, columnspan=3)
 
 
@@ -424,6 +434,9 @@ class VentanaIndividual():
                 self.boton.grid(row=contador_filas, column=contador_columnas)
                 self.boton["command"] = lambda s = sector: self.siguiente(s)
 
+            if sector != 'LECMPAU':
+                self.boton["state"] = "disabled"
+
             self.botones.append(self.boton)
 
             contador_columnas += 1
@@ -432,7 +445,7 @@ class VentanaIndividual():
                 contador_columnas = 0
             contador_total += 1
 
-        extra = Label(self.root, text='\n\n\n\n')
+        extra = Label(self.root, text='\n\n\n\n', bg=COLOR_TITULO)
         extra.grid(row=((len(self.sectores) // 3) + 2), column=0)
 
     def siguiente(self, sector):
@@ -467,6 +480,25 @@ class VentanaIndividual():
             contador += 1
         lista_ventanas.pop(contador)
         lista_ventanas[0].boton1["state"] = "normal"
+        lista_ventanas[0].show()
+
+        lista = []
+        for i in range(len(lista_ventanas)):
+            if isinstance(lista_ventanas[i], VentanaFlujos) or isinstance(lista_ventanas[i], VentanaInformacion):
+                if len(lista) == 0:
+                    lista.append(i)
+                else:
+                    guardado = False
+                    for j in range(len(lista)):
+                        if lista[j] < i:
+                            lista.insert(j, i)
+                            guardado = True
+                            break
+                    if not guardado:
+                        lista.append(i)
+        for k in lista:
+            lista_ventanas[k].root.destroy()
+            lista_ventanas.pop(k)
 
 class VentanaPrincipal():
     def __init__(self):
@@ -477,30 +509,31 @@ class VentanaPrincipal():
 
         self.construir_ventana()
 
-
     def iniciar_root(self):
         self.root.geometry('600x500')
         self.root.resizable(width=False, height=False)
-        self.root.wm_attributes("-topmost", True)
+        self.root.wm_attributes("-topmost", False)
         self.root.title("Ventana inicio")
 
         self.root.protocol("WM_DELETE_WINDOW", self.cerrar)
 
     def construir_ventana(self):
+        self.root.configure(background=COLOR_TITULO)
         self.frame_f1 = LabelFrame(self.root).pack(padx=50, pady=30)
         self.frame_f2 = LabelFrame(master=self.root).pack()
         self.frame_f3 = LabelFrame(master=self.root).pack()
 
-        self.label_inicial = Label(self.frame_f1, text='Pestaña de inicialización.\nElija una de las dos opciones sugeridas a continuación.', font="arial 15")
+        self.label_inicial = Label(self.frame_f1, text='Pestaña de inicialización.\nElija una de las dos opciones sugeridas a continuación.', font="arial 15", fg='white', bg=COLOR_TITULO)
         self.label_inicial.pack(pady=25)
 
-        self.boton1 = Button(self.frame_f2, width=50, height=5, text='Análisis de un sector individual', font="arial 12", )
+        self.boton1 = Button(self.frame_f2, width=50, height=5, text='Análisis de un sector individual', font="arial 14")
         self.boton2 = Button(self.frame_f3, width=50, height=5, text='Análisis conjunto de varios sectores', font="arial 12")
         self.boton1.pack(padx=50, pady=25)
         self.boton2.pack(padx=25)
 
         self.boton1["command"] = lambda modo = 1: self.iniciar(modo)
         self.boton2["command"] = lambda modo = 2: self.iniciar(modo)
+        self.boton2["state"] = "disabled"
 
     def iniciar(self, modo=None):
 
@@ -520,13 +553,21 @@ class VentanaPrincipal():
 
             lista_ventanas.append(ventana_datos)
             contador_ventanas += 1
-            print(contador_ventanas)
+            self.hide()
 
         else:
             pass
 
+    def hide(self):
+        self.root.withdraw()
+
+    def show(self):
+        self.root.update()
+        self.root.deiconify()
+
     def cerrar(self):
         self.root.destroy()
+        lista_ventanas.clear()
 
 
 if __name__ == "__main__":

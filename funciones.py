@@ -387,10 +387,6 @@ def create_popup_info(data, id_flujo, aeronaves_flujo):
                         <td style="padding: 10px; background-color: """+ right_col_color +""";">""" + levels[0] + """ ; """ + levels[1] + """</td>
                     </tr>
                     <tr>
-                        <td style="padding: 10px; background-color: """+ left_col_color +""";"><span style="color: #ffffff;"> IMPACTO MEDIO </span></td>
-                        <td style="padding: 10px; background-color: """+ right_col_color +""";">""" + levels[0] + """ ; """ + levels[1] + """</td>
-                    </tr>
-                    <tr>
                         <td style="padding: 10px; background-color: """+ left_col_color +""";"><span style="color: #ffffff;"> NÚMERO DE AERONAVES </span></td>
                         <td style="padding: 10px; background-color: """+ right_col_color +""";">""" + str(len(aeronaves_flujo)) + """</td>
                     </tr>
