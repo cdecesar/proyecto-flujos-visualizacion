@@ -1,8 +1,16 @@
 import os, re, json, glob, pathlib, random, math
 from tkinter import *
+
+import pandas
+
 from Visualizacion import Visualizacion
 from PIL import ImageTk, Image
+#import ggplot
+import matplotlib.pyplot as plt
+import numpy as np
 
+
+'''-  -'''
 FILES_PATH = str(pathlib.Path(__file__).parent.resolve())
 COLOR_TITULO = '#020c80'
 COLOR_FONDO = '#94c4fe'
@@ -126,7 +134,7 @@ class VentanaInformacion():
 
         else:
             self.root.bind('<Configure>', self.resizer)
-            self.im = Image.open(FILES_PATH + "\\Images\\barras.png")
+            self.im = Image.open(FILES_PATH + "\\Images\\foo.png")
 
             img = ImageTk.PhotoImage(self.im)
             self.w = int(math.floor(img.width()/1.7))
@@ -141,9 +149,12 @@ class VentanaInformacion():
             self.label1.pack()
 
     def resizer(self, e):
-        bg1 = Image.open(FILES_PATH + "\\Images\\barras.png")
+        bg1 = Image.open(FILES_PATH + "\\Images\\foo.png")
         resize_bg1 = bg1.resize((min(int(self.root.winfo_width()), self.w), min(int(self.root.winfo_height()), self.h)))
-        # resize_bg1 = bg1.resize((e.width, e.height))
+        self.w = int(self.root.winfo_width())
+        self.h = int(self.root.winfo_height())
+#        resize_bg1 = bg1.resize((e.width, e.height))
+        #resize_bg1 = bg1.resize((int(self.root.winfo_width()), int(self.root.winfo_height())))
 
         new_bg = ImageTk.PhotoImage(resize_bg1)
 
@@ -223,6 +234,108 @@ class VentanaFlujos():
                 else:
                     extra = Label(self.root, text='\n', pady=5, bg=COLOR_TITULO)
                     extra.grid(row=fila, column=0)
+        self.grafico()
+
+    def grafico(self):
+
+        base_datos = pandas.read_csv(FILES_PATH + "\\Archivos\\Impacto_final_0_LECMPAU.csv", delimiter=',')
+        base_datos_2 = base_datos.loc[base_datos['Cerrado(0)/Abierto(1)'] != '0']
+        impactos = base_datos['Impacto6']
+        c = 0
+        data = [0, 0, 0, 0, 0]
+        contador2 = 0
+        contador = base_datos.index[c]
+
+        while contador2 < impactos.size:
+            if base_datos['Cerrado(0)/Abierto(1)'][contador] == 1:
+                impact = int(impactos[contador])
+
+                data[impact - 1] = data[impact - 1] + 1
+
+
+            # Condicion de salida del bucle
+            if (contador2 + 1) == impactos.size:
+                break
+            else:
+                c += 1
+                contador = base_datos_2.index[c]
+                contador2 += 1
+
+        mylabels = ["Impacto 1", "Impacto 2", "Impacto 3", "Impacto 4", "Impacto 5"]
+
+        # Creating explode data
+        explode = (0.1, 0.0, 0.2, 0.3, 0.0)
+
+        # Creating color parameters
+        colors = ("orange", "cyan", "brown",
+                  "grey", "indigo")
+
+        fig, ax = plt.subplots(1,2, figsize=(10, 7))
+        wedges, texts, autotexts = ax[0].pie(data,
+                                          autopct=lambda pct: self.func(pct, data),
+                                          explode=explode,
+                                          labels=mylabels,
+                                          shadow=True,
+                                          colors=colors,
+                                          startangle=90,
+                                          textprops=dict(color="magenta"))
+
+        c = 0
+        contador2 = 0
+        contador = base_datos.index[c]
+        i1 = [0,0,0,0,0,0,0,0,0,0,0,0]
+        i2 = [0,0,0,0,0,0,0,0,0,0,0,0]
+        i3 = [0,0,0,0,0,0,0,0,0,0,0,0]
+        i4 = [0,0,0,0,0,0,0,0,0,0,0,0]
+        i5 = [0,0,0,0,0,0,0,0,0,0,0,0]
+        meses = ['E', 'F', 'M', 'Ab', 'M', 'Jun', 'Jul', 'Ag', 'S', 'O', 'N', 'D']
+
+
+        while contador2 < impactos.size:
+            if base_datos['Cerrado(0)/Abierto(1)'][contador] == 1:
+                impact = int(impactos[contador])
+                if impact == 1:
+                    i1[int(base_datos['Month'][contador]) - 1] = i1[int(base_datos['Month'][contador]) - 1] + 1
+                elif impact == 2:
+                    i2[int(base_datos['Month'][contador]) - 1] = i2[int(base_datos['Month'][contador]) - 1] + 1
+
+                elif impact == 3:
+                    i3[int(base_datos['Month'][contador]) - 1] = i3[int(base_datos['Month'][contador]) - 1] + 1
+
+                elif impact == 4:
+                    i4[int(base_datos['Month'][contador]) - 1] = i4[int(base_datos['Month'][contador]) - 1] + 1
+
+                elif impact == 5:
+                    i5[int(base_datos['Month'][contador]) - 1] = i5[int(base_datos['Month'][contador]) - 1] + 1
+
+
+            # Condicion de salida del bucle
+            if (contador2 + 1) == impactos.size:
+                break
+            else:
+                c += 1
+                contador = base_datos_2.index[c]
+                contador2 += 1
+
+        i1 = np.array(i1)
+        i2 = np.array(i2)
+        i3 = np.array(i3)
+        i4 = np.array(i4)
+        i5 = np.array(i5)
+
+        ax[1].bar(meses, i1, 0.4, color='r', label='Impacto1')
+        ax[1].bar(meses, tuple(i2), 0.4, color='b', bottom=i1, label='Impacto2')
+        ax[1].bar(meses, tuple(i3), 0.4, color='g', bottom=i1 + i2, label='Impacto3')
+        ax[1].bar(meses, tuple(i4), 0.4, color='black', bottom=i1 + i2 + i3, label='Impacto4')
+        ax[1].bar(meses, tuple(i5), 0.4, color='y', bottom=i1 +i2 + i3 + i4, label='Impacto5')
+
+        plt.xlabel("Impacto1 | Impacto2 | Impacto3 | Impacto4 | Impacto5")
+        plt.savefig('foo.png')
+        plt.show()
+
+    def func(self, pct, allvalues):
+        absolute = int(pct / 100. * np.sum(allvalues))
+        return "{:.1f}%\n({:d} flujos)".format(pct, absolute)
 
     def informar(self, flujo):
         self.hide()
@@ -230,6 +343,8 @@ class VentanaFlujos():
         #v_infografica = VentanaInformacion(lista_ventanas[0].root, self.id, flujo, 2, self.sector)
         #lista_ventanas.append(v_infografica)
         lista_ventanas.append(v_infobasica)
+        l = [self.sector, flujo]
+        v = Visualizacion(l)
 
 
     def hide(self):

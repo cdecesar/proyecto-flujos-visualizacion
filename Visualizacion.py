@@ -38,16 +38,24 @@ class Visualizacion():
         self.FILES_PATH = str(pathlib.Path(__file__).parent.resolve())
 
         if len(self.sector) == 1:
-            self.cargar_info_un_mapa()
+            self.cargar_info_un_mapa(1)
             self.mostrar(self.cargar_un_mapa())
         else:
-            self.mostrar(self.cargar_varios_mapas())
+            self.cargar_info_un_mapa(2)
+            self.mostrar(self.cargar_un_flujo())
+            #self.mostrar(self.cargar_varios_mapas())
 
 
-    def cargar_info_un_mapa(self):
-        with open(self.FILES_PATH + '\\Carpeta_JSON\\Clusterizados2_' + self.sector[0] + '.json', "r") as f6:
-            self.json_flujos = json.load(f6)
-        f6.close()
+    def cargar_info_un_mapa(self, data):
+        if data == 1:
+            with open(self.FILES_PATH + '\\Carpeta_JSON\\Clusterizados2_' + self.sector[0] + '.json', "r") as f6:
+                self.json_flujos = json.load(f6)
+            f6.close()
+
+        else:
+            with open(self.FILES_PATH + '\\' + self.sector[0] + '_NUEVOS.json', "r") as f6:
+                self.json_flujos = json.load(f6)
+            f6.close()
 
         with open(self.FILES_PATH + '\\Carpeta_JSON\\Asociacion2_' + self.sector[0] + '.json', "r") as f6:
             self.json_aeronaves = json.load(f6)
@@ -95,6 +103,51 @@ class Visualizacion():
             return self.colores[2]
         else:
             return self.colores[3]
+
+    def cargar_un_flujo(self):
+
+        centro = self.poligono1.centroid
+        lon = centro.bounds[1]
+        lat = centro.bounds[0]
+
+        MAPA = 'https://api.mapbox.com/styles/v1/mapbox/light-v10/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoiYmVsc2FyIiwiYSI6ImNsMWtnd3UyaTAwZGkzYm8zeng1ZHF6YXIifQ.zjyS9oluZL2c0sCP4krWFw'
+
+        self.mapa = folium.Map(location=[lat, lon], tiles=None, zoom_start=8)
+
+        tile_layer = folium.TileLayer(
+            tiles=MAPA,
+            attr='mapbox',
+            zoom_start=8,
+            name=self.sector[0],
+            control=True,
+            opacity=0.7
+        )
+
+        tile_layer.add_to(self.mapa)
+
+        folium.Polygon(self.lista_coordenadas,
+                       color="black",
+                       weight=2,
+                       fill=True,
+                       fill_color="white",
+                       fill_opacity=0.4).add_to(self.mapa)
+
+        datos = self.json_flujos.get(self.sector[1]) #lista de listas
+        aeronaves = self.json_aeronaves.get(self.sector[1])
+
+        for i in datos.keys():
+            data = datos.get(i)
+            grupo_leyenda = folium.FeatureGroup('Flujo: ' + i)
+
+            folium.PolyLine(data,
+                            color=self.calcular_color(self.sector[1]), weight=self.calcular_grosor(self.sector[1]),
+                            tooltip='Flujo: ' + i).add_to(grupo_leyenda)
+
+            grupo_leyenda.add_to(self.mapa)
+
+        folium.LayerControl().add_to(self.mapa)
+        return 'Flujo ' + str(self.sector[1])
+
 
     def cargar_un_mapa(self):
 
