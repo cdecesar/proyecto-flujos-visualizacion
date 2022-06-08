@@ -77,8 +77,8 @@ class VentanaInformacion():
         self.root.protocol("WM_DELETE_WINDOW", self.cerrar)
         #self.root.geometry("100x500")
 
-
     def cargar_infobasica(self):
+
         with open(FILES_PATH + '\\Carpeta_JSON\\Clusterizados2_' + self.sector + '.json', "r") as f6:
             self.json_flujos = json.load(f6)
         f6.close()
@@ -180,6 +180,7 @@ class VentanaInformacion():
         if encontrado:
             lista_ventanas[contador].show()
 
+
 class VentanaFlujos():
     def __init__(self, master, identificador, sector):
         self.root = Toplevel(master)
@@ -272,13 +273,13 @@ class VentanaFlujos():
 
         fig, ax = plt.subplots(1,2, figsize=(10, 7))
         wedges, texts, autotexts = ax[0].pie(data,
-                                          autopct=lambda pct: self.func(pct, data),
-                                          explode=explode,
-                                          labels=mylabels,
-                                          shadow=True,
-                                          colors=colors,
-                                          startangle=90,
-                                          textprops=dict(color="magenta"))
+            autopct=lambda pct: self.func(pct, data),
+            explode=explode,
+            labels=mylabels,
+            shadow=True,
+            colors=colors,
+            startangle=90,
+            textprops=dict(color="magenta"))
 
         c = 0
         contador2 = 0
@@ -289,7 +290,6 @@ class VentanaFlujos():
         i4 = [0,0,0,0,0,0,0,0,0,0,0,0]
         i5 = [0,0,0,0,0,0,0,0,0,0,0,0]
         meses = ['E', 'F', 'M', 'Ab', 'M', 'Jun', 'Jul', 'Ag', 'S', 'O', 'N', 'D']
-
 
         while contador2 < impactos.size:
             if base_datos['Cerrado(0)/Abierto(1)'][contador] == 1:
@@ -307,7 +307,6 @@ class VentanaFlujos():
 
                 elif impact == 5:
                     i5[int(base_datos['Month'][contador]) - 1] = i5[int(base_datos['Month'][contador]) - 1] + 1
-
 
             # Condicion de salida del bucle
             if (contador2 + 1) == impactos.size:
@@ -345,7 +344,6 @@ class VentanaFlujos():
         lista_ventanas.append(v_infobasica)
         l = [self.sector, flujo]
         v = Visualizacion(l)
-
 
     def hide(self):
         self.root.withdraw()
@@ -385,6 +383,7 @@ class VentanaFlujos():
                         lista_ventanas.pop(contador)
                         break
                 contador += 1
+
 
 class VentanaConjunto():
     def __init__(self, master, identificador):
@@ -497,14 +496,12 @@ class VentanaConjunto():
         else:
             ventana_aviso = PopUp(lista_ventanas[0].root, 'DEBE SELECCIONAR AL MENOS 1 SECTOR')
 
-
     def hide(self):
         self.root.withdraw()
 
     def show(self):
         self.root.update()
         self.root.deiconify()
-
 
     def cerrar(self):
         self.root.destroy()
@@ -515,6 +512,7 @@ class VentanaConjunto():
             contador += 1
         lista_ventanas.pop(contador)
         lista_ventanas[0].boton2["state"] = "normal"
+
 
 class VentanaIndividual():
     def __init__(self, master, identificador):
@@ -630,6 +628,7 @@ class VentanaIndividual():
         for k in lista:
             lista_ventanas[k].root.destroy()
             lista_ventanas.pop(k)
+
 
 class VentanaPrincipal():
     def __init__(self):
