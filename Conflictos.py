@@ -1,14 +1,5 @@
-import time
 from datetime import datetime
-import logging
 import tkinter as tk
-from tkinter import ttk
-import threading
-from reportlab.pdfgen import canvas
-from reportlab.lib.pagesizes import A4
-
-logging.basicConfig(level=logging.DEBUG,
-                    format='[%(levelname)s] - %(threadName)-10s : %(message)s')
 
 ITERACION = 0
 THREAD = 0
@@ -347,7 +338,7 @@ root.geometry('+1200+400')
 root.resizable(width=False, height=False)
 root.iconbitmap('C:\\Users\\SkySim\\Desktop\\Ventanas\\Logo_SATAA.ico')
 root.wm_attributes("-topmost", True)
-root.title("PRUEBA")
+root.title("INICIO")
 
 left_pane1 = tk.PanedWindow(root, orient=tk.VERTICAL)
 left_pane1.grid(column=0, row=0, rowspan=1, sticky=(tk.N, tk.W, tk.E, tk.S))

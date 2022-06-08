@@ -50,12 +50,20 @@ while contador2 < flightkey.size:
         c += 1
         contador = csv.index[c]
         contador2 += 1
+#%%
 
 for i in asociacion_flujos.keys():
+    print(i)
     print(asociacion_flujos.get(i))
+    print('-------------------------')
+
 #%%
+
 recorrido = dimroute['poligono']
 id = dimroute['routeKey']
+print(recorrido)
+print(id)
+#%%
 
 dic = {}
 
@@ -70,7 +78,7 @@ for i in asociacion_flujos.keys():
 
             if id[contador] == j and j not in dic.keys():
                 dic.update({j: []})
-                print(id[contador])
+                print('daleeee')
 
                 r = recorrido[contador]
                 primero = re.split('\(', r)
@@ -101,15 +109,17 @@ for i in asociacion_flujos.keys():
                     l = dic.get(j)
                     l.append(a)
                     dic[j] = l
-
+            else:
+                pass
             if (contador2 + 1) == flightkey.size:
                 break
             else:
                 c += 1
                 contador = csv.index[c]
                 contador2 += 1
+#%%
 
-for i in dic.keys():
+for i in asociacion_flujos.keys():
     print(i)
     print(dic.get(i))
     print('-----------------------------------------------------------------')

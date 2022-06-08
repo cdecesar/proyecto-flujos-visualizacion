@@ -1,20 +1,16 @@
-import os, re, json, glob, pathlib, random, math
+import os, json, glob, pathlib, math
 from tkinter import *
-
 import pandas
-
 from Visualizacion import Visualizacion
 from PIL import ImageTk, Image
-#import ggplot
 import matplotlib.pyplot as plt
 import numpy as np
 
-
-'''-  -'''
 FILES_PATH = str(pathlib.Path(__file__).parent.resolve())
 COLOR_TITULO = '#020c80'
 COLOR_FONDO = '#94c4fe'
 lista_ventanas = []
+
 global contador_ventanas
 contador_ventanas = 1
 
@@ -559,7 +555,7 @@ class VentanaIndividual():
                 self.boton.grid(row=contador_filas, column=contador_columnas)
                 self.boton["command"] = lambda s = sector: self.siguiente(s)
 
-            if sector != 'LECMPAU':
+            if sector != 'LECMPAU' and sector != 'LECMCJL':
                 self.boton["state"] = "disabled"
 
             self.botones.append(self.boton)

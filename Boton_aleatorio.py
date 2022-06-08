@@ -1,17 +1,9 @@
 import random, pathlib
 import time
 from datetime import datetime
-import logging
 import tkinter as tk
-from tkinter import ttk
-import threading
-from reportlab.pdfgen import canvas
-from reportlab.lib.pagesizes import A4
 FILES_PATH = str(pathlib.Path(__file__).parent.resolve())
 
-
-logging.basicConfig(level=logging.DEBUG,
-                    format='[%(levelname)s] - %(threadName)-10s : %(message)s')
 
 class GuardarTiempo():
     def __init__(self):
@@ -37,7 +29,7 @@ class PopUp():
         self.top.resizable(width=False, height=False)
         # root.iconbitmap('C:\\Users\\SkySim\\Desktop\\Ventanas\\Logo_SATAA.ico')
         self.top.wm_attributes("-topmost", True)
-        self.top.title("PRUEBA")
+        self.top.title("Popup")
         self.top.protocol("WM_DELETE_WINDOW", self.cerrar)
 
 
@@ -178,7 +170,7 @@ root.geometry('+1200+400')
 root.resizable(width=False, height=False)
 #root.iconbitmap('C:\\Users\\SkySim\\Desktop\\Ventanas\\Logo_SATAA.ico')
 root.wm_attributes("-topmost", True)
-root.title("PRUEBA")
+root.title("INICIO")
 
 left_pane1 = tk.PanedWindow(root, orient=tk.VERTICAL)
 left_pane1.grid(column=0, row=0, rowspan=1, sticky=(tk.N, tk.W, tk.E, tk.S))
@@ -191,7 +183,7 @@ frame1.rowconfigure(0, weight=1)
 frame1.columnconfigure(0, weight=1)
 left_pane1.add(frame1, width=120, height=70)
 
-boton_conflicto = tk.Button(master=frame1, text="START", fg="aquamarine2", bg="dimgray")
+boton_conflicto = tk.Button(master=frame1, text="COMENZAR", fg="aquamarine2", bg="dimgray")
 boton_conflicto.grid(row=0, column=0, sticky=(tk.W, tk.S, tk.E, tk.N))
 boton_conflicto["command"] = iniciar
 
