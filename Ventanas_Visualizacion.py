@@ -1,4 +1,4 @@
-import os, json, glob, pathlib, math
+import os, json, glob, pathlib, math, re
 from tkinter import *
 import pandas
 from Visualizacion import Visualizacion
@@ -555,7 +555,7 @@ class VentanaIndividual():
                 self.boton.grid(row=contador_filas, column=contador_columnas)
                 self.boton["command"] = lambda s = sector: self.siguiente(s)
 
-            if sector != 'LECMPAU' and sector != 'LECMCJL':
+            if sector != 'LECMPAU' and sector != 'LECMCJI':
                 self.boton["state"] = "disabled"
 
             self.botones.append(self.boton)
