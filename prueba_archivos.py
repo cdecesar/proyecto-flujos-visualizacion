@@ -7,20 +7,39 @@ import matplotlib.pyplot as plt
 import numpy as np
 from openpyxl.workbook import Workbook
 
+def calcularTiempo(tiempo):
+    minutos = int(tiempo[0][3:5])
+    segundos = int(tiempo[0][6])
 
+    return  minutos * 6 + segundos
 
 # Quitar los conflictos CLAM, filtrar los otros conflictos por aeronaves que forman parte del sector, y guardar todas las horas
 
 FILES_PATH = str(pathlib.Path(__file__).parent.resolve())
 
+repeticiones = {
+    'LTCA': {
+
+    },
+    'HDG': [],
+    'AOC': [],
+    'CFO': [],
+    'CFL': [],
+}
+
 df = pandas.DataFrame()
-TIEMPOS = [*range(0, 46)]
-LTCA = [0] * 46
-CLAM = [0] * 46
-AOC = [0] * 46
-HDG = [0] * 46
-CFL = [0] * 46
-COF = [0] * 46
+TIEMPOS = []
+
+for i in range(0, 46):
+    for j in range(0, 6):
+        TIEMPOS.append(i * 6 + j)
+
+LTCA = [0] * 276
+CLAM = [0] * 276
+AOC = [0] * 276
+HDG = [0] * 276
+CFL = [0] * 276
+COF = [0] * 276
 
 with open(FILES_PATH + '\\Skyvisual_SIMULADOR_02_Event_Log_20220628.log') as f:
     f = f.readlines()
@@ -28,28 +47,39 @@ with open(FILES_PATH + '\\Skyvisual_SIMULADOR_02_Event_Log_20220628.log') as f:
 for line in f:
     tiempo = re.findall('\d{2}:\d{2}:\d{2}\.\d{3}', line)
     if len(tiempo) != 0:
-        minuto = tiempo[0][3:5]
+        minuto = calcularTiempo(tiempo)
         preparado = line.split(' \t')[1]
         evento = preparado.split('\t')[0]
 
         if 'CONFLICT' in evento:
             partido = evento.split('CONFLICT=')[1]
-
             if partido == 'LTCA':
                 LTCA[int(minuto)] += 1
+                nave1 = preparado.split('\t')[2].split('CS1=')[1]
+                nave2 = preparado.split('\t')[6].split('CS2=')[1]
+                if 'START' in line:
+                    if nave1 + '-' + nave2 not in repeticiones['LTCA'].keys():
+                        repeticiones['LTCA'].update({nave1 + '-' + nave2: [[['START', minuto]]]})
+                    else:
+                        repeticiones['LTCA'][nave1 + '-' + nave2].append([['START', minuto]])
+                else:
+                    info = repeticiones['LTCA'][nave1 + '-' + nave2]
+                    info[len(info) - 1].append(['END', minuto])
+                    repeticiones['LTCA'][nave1 + '-' + nave2] = info
 
             elif partido == 'CLAM':
                 CLAM[int(minuto)] += 1
 
             else:
-                print(partido)
-
+                pass
 
         elif 'EVENT' in line:
             partido = evento.split('EVENT=')[1]
-
+            nave = preparado.split('\t')[1].split('CS=')[1]
             if partido == 'AOC':
-                AOC[int(minuto)] += 1
+                if nave not in repeticiones['AOC']:
+                    repeticiones['AOC'].append(nave)
+                    AOC[int(minuto)] += 1
 
             elif partido == 'HDG':
                 HDG[int(minuto)] += 1
@@ -62,10 +92,22 @@ for line in f:
 
             else:
                 pass
+            if partido != 'AOC' and partido != 'COF':
+                for i in repeticiones['LTCA'].keys():
+                    if nave in i:
+                        datos = repeticiones['LTCA'][i]
+                        ultimoItem = datos[-1][-1]
+                        if 'END' not in ultimoItem:
+                            repeticiones['LTCA'][i][len(repeticiones['LTCA'][i]) - 1].append(partido + '-' + str(minuto))
+                        else:
+                            repeticiones['LTCA'][i][len(repeticiones['LTCA'][i]) - 1].insert(-1, partido + '-' + str(minuto))
         else:
             pass
 
-
+print(len(repeticiones['AOC']))
+for i in repeticiones['LTCA'].keys():
+    print(i)
+    print(repeticiones['LTCA'].get(i))
 
 TIEMPOS.append('TOTAL')
 LTCA.append(sum(LTCA))
@@ -77,7 +119,7 @@ HDG.append(sum(HDG))
 
 total = []
 
-for i in range(0, 47):
+for i in range(0, 277):
     total.append(LTCA[i] + CLAM[i] + AOC[i] + CFL[i] + COF[i] + HDG[i])
 
 df['Minuto'] = TIEMPOS
