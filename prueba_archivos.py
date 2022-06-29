@@ -7,6 +7,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 from openpyxl.workbook import Workbook
 
+
+
+# Quitar los conflictos CLAM, filtrar los otros conflictos por aeronaves que forman parte del sector, y guardar todas las horas
+
 FILES_PATH = str(pathlib.Path(__file__).parent.resolve())
 
 df = pandas.DataFrame()
@@ -18,7 +22,7 @@ HDG = [0] * 46
 CFL = [0] * 46
 COF = [0] * 46
 
-with open(FILES_PATH + '\Skyvisual_SIMULADOR_02_Event_Log_20220613.log') as f:
+with open(FILES_PATH + '\\Skyvisual_SIMULADOR_02_Event_Log_20220628.log') as f:
     f = f.readlines()
 
 for line in f:
@@ -85,5 +89,5 @@ df['Evento: CFL'] = CFL
 df['Evento: COF'] = COF
 df['Total'] = total
 
-df.to_excel('E.xlsx','Sheet1')
+df.to_excel('DatosEjercicio7.xlsx','Sheet1')
 

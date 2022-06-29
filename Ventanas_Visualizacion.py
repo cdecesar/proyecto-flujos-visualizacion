@@ -5,6 +5,21 @@ from Visualizacion import Visualizacion
 from PIL import ImageTk, Image
 import matplotlib.pyplot as plt
 import numpy as np
+from Datos_Graficas.Complejidad_sector_semana import complejidadSectorSemana
+from Datos_Graficas.Complejidad_todos_sectores_un_año import complejidadTodosSectoresAnual
+from Datos_Graficas.Complejidad_un_sector_dia_semana import complejidadSectorDiaSemana
+from Datos_Graficas.Complejidad_un_sector_mes import complejidadSectorMes
+from Datos_Graficas.Diagrama_porcentaje_año_pie_chart import diagramaPorcetajePieChart
+from Datos_Graficas.Diagrama_porcentaje_semana_bar import diagramaPorcentajeSemanaBar
+from Datos_Graficas.Diagrama_porcentajes_mes_bar import diagramaPorcentajeMesBar
+from Datos_Graficas.Impacto_todos_flujos_todos_sectores_año import impactoTodoSectoresAño
+from Datos_Graficas.impacto_todos_flujos_un_sector_1_año import impactoSectorAnual
+from Datos_Graficas.impacto_un_flujo_dia_semana_media import impactoMedioDiaSemana
+from Datos_Graficas.Impacto_un_flujo_mes import impactoFlujoMensaul
+from Datos_Graficas.impacto_un_flujo_sector_semana_media import impactoMedioSemanal
+from Datos_Graficas.impacto_un_flujo_semana import impactoFlujoSemanal
+from Datos_Graficas.Impacto_un_flujo_un_año import impactoFlujoAnual
+from Datos_Graficas.impacto_un_flujos_sector_mes_media import impactoMedioSectorMensual
 
 FILES_PATH = str(pathlib.Path(__file__).parent.resolve())
 COLOR_TITULO = '#020c80'
@@ -128,34 +143,15 @@ class VentanaInformacion():
             l11 = Label(self.root, text=str(len(naves)), font='arial 12 bold', pady=2, padx=2, fg='white', bg='#94c4fe')
             l11.grid(row=4, column=1)
 
-        else:
-            self.root.bind('<Configure>', self.resizer)
-            self.im = Image.open(FILES_PATH + "\\Images\\foo.png")
+        self.grafico()
 
-            img = ImageTk.PhotoImage(self.im)
-            self.w = int(math.floor(img.width()/1.7))
-            self.h = int(math.floor(img.height())/1.7)
-
-            ajustada = self.im.resize((self.w, self.h))
-            self.img = ImageTk.PhotoImage(ajustada)
-
-            # create label and add resize image
-            self.label1 = Label(master=self.root, image=self.img)
-            self.label1.image = self.img
-            self.label1.pack()
-
-    def resizer(self, e):
-        bg1 = Image.open(FILES_PATH + "\\Images\\foo.png")
-        resize_bg1 = bg1.resize((min(int(self.root.winfo_width()), self.w), min(int(self.root.winfo_height()), self.h)))
-        self.w = int(self.root.winfo_width())
-        self.h = int(self.root.winfo_height())
-#        resize_bg1 = bg1.resize((e.width, e.height))
-        #resize_bg1 = bg1.resize((int(self.root.winfo_width()), int(self.root.winfo_height())))
-
-        new_bg = ImageTk.PhotoImage(resize_bg1)
-
-        self.label1.config(image=new_bg)
-        self.label1.image = new_bg
+    def grafico(self):
+        impactoMedioDiaSemana(self.sector, self.flujo, self.json_flujos)
+        impactoFlujoMensaul(self.sector, self.flujo, self.json_flujos)
+        impactoMedioSemanal(self.sector, self.flujo, self.json_flujos)
+        impactoFlujoSemanal(self.sector, self.flujo, self.json_flujos)
+        impactoFlujoAnual(self.sector, self.flujo, self.json_flujos)
+        impactoMedioSectorMensual(self.sector, self.flujo, self.json_flujos)
 
     def cerrar(self):
         self.root.destroy()
@@ -234,103 +230,13 @@ class VentanaFlujos():
         self.grafico()
 
     def grafico(self):
-
-        base_datos = pandas.read_csv(FILES_PATH + "\\Archivos\\Impacto_final_0_LECMPAU.csv", delimiter=',')
-        base_datos_2 = base_datos.loc[base_datos['Cerrado(0)/Abierto(1)'] != '0']
-        impactos = base_datos['Impacto6']
-        c = 0
-        data = [0, 0, 0, 0, 0]
-        contador2 = 0
-        contador = base_datos.index[c]
-
-        while contador2 < impactos.size:
-            if base_datos['Cerrado(0)/Abierto(1)'][contador] == 1:
-                impact = int(impactos[contador])
-
-                data[impact - 1] = data[impact - 1] + 1
-
-
-            # Condicion de salida del bucle
-            if (contador2 + 1) == impactos.size:
-                break
-            else:
-                c += 1
-                contador = base_datos_2.index[c]
-                contador2 += 1
-
-        mylabels = ["Impacto 1", "Impacto 2", "Impacto 3", "Impacto 4", "Impacto 5"]
-
-        # Creating explode data
-        explode = (0.1, 0.0, 0.2, 0.3, 0.0)
-
-        # Creating color parameters
-        colors = ("orange", "cyan", "brown",
-                  "grey", "indigo")
-
-        fig, ax = plt.subplots(1,2, figsize=(10, 7))
-        wedges, texts, autotexts = ax[0].pie(data,
-            autopct=lambda pct: self.func(pct, data),
-            explode=explode,
-            labels=mylabels,
-            shadow=True,
-            colors=colors,
-            startangle=90,
-            textprops=dict(color="magenta"))
-
-        c = 0
-        contador2 = 0
-        contador = base_datos.index[c]
-        i1 = [0,0,0,0,0,0,0,0,0,0,0,0]
-        i2 = [0,0,0,0,0,0,0,0,0,0,0,0]
-        i3 = [0,0,0,0,0,0,0,0,0,0,0,0]
-        i4 = [0,0,0,0,0,0,0,0,0,0,0,0]
-        i5 = [0,0,0,0,0,0,0,0,0,0,0,0]
-        meses = ['E', 'F', 'M', 'Ab', 'M', 'Jun', 'Jul', 'Ag', 'S', 'O', 'N', 'D']
-
-        while contador2 < impactos.size:
-            if base_datos['Cerrado(0)/Abierto(1)'][contador] == 1:
-                impact = int(impactos[contador])
-                if impact == 1:
-                    i1[int(base_datos['Month'][contador]) - 1] = i1[int(base_datos['Month'][contador]) - 1] + 1
-                elif impact == 2:
-                    i2[int(base_datos['Month'][contador]) - 1] = i2[int(base_datos['Month'][contador]) - 1] + 1
-
-                elif impact == 3:
-                    i3[int(base_datos['Month'][contador]) - 1] = i3[int(base_datos['Month'][contador]) - 1] + 1
-
-                elif impact == 4:
-                    i4[int(base_datos['Month'][contador]) - 1] = i4[int(base_datos['Month'][contador]) - 1] + 1
-
-                elif impact == 5:
-                    i5[int(base_datos['Month'][contador]) - 1] = i5[int(base_datos['Month'][contador]) - 1] + 1
-
-            # Condicion de salida del bucle
-            if (contador2 + 1) == impactos.size:
-                break
-            else:
-                c += 1
-                contador = base_datos_2.index[c]
-                contador2 += 1
-
-        i1 = np.array(i1)
-        i2 = np.array(i2)
-        i3 = np.array(i3)
-        i4 = np.array(i4)
-        i5 = np.array(i5)
-
-        ax[1].bar(meses, i1, 0.4, color='r', label='Impacto1')
-        ax[1].bar(meses, tuple(i2), 0.4, color='b', bottom=i1, label='Impacto2')
-        ax[1].bar(meses, tuple(i3), 0.4, color='g', bottom=i1 + i2, label='Impacto3')
-        ax[1].bar(meses, tuple(i4), 0.4, color='black', bottom=i1 + i2 + i3, label='Impacto4')
-        ax[1].bar(meses, tuple(i5), 0.4, color='y', bottom=i1 +i2 + i3 + i4, label='Impacto5')
-
-        plt.xlabel("Impacto1 | Impacto2 | Impacto3 | Impacto4 | Impacto5")
-        plt.savefig('foo.png')
-        plt.show()
-
-    def func(self, pct, allvalues):
-        absolute = int(pct / 100. * np.sum(allvalues))
-        return "{:.1f}%\n({:d} flujos)".format(pct, absolute)
+        complejidadSectorSemana(self.sector)
+        complejidadSectorDiaSemana(self.sector)
+        complejidadSectorMes(self.sector)
+        diagramaPorcetajePieChart(self.sector)
+        diagramaPorcentajeSemanaBar(self.sector)
+        diagramaPorcentajeMesBar(self.sector)
+        impactoSectorAnual(self.sector, self.datos_json)
 
     def informar(self, flujo):
         self.hide()
@@ -568,6 +474,11 @@ class VentanaIndividual():
 
         extra = Label(self.root, text='\n\n\n\n', bg=COLOR_TITULO)
         extra.grid(row=((len(self.sectores) // 3) + 2), column=0)
+        self.grafico()
+
+    def grafico(self):
+        impactoTodoSectoresAño()
+        complejidadTodosSectoresAnual()
 
     def siguiente(self, sector):
         global contador_ventanas, abierto
@@ -694,7 +605,6 @@ class VentanaPrincipal():
     def cerrar(self):
         self.root.destroy()
         lista_ventanas.clear()
-
 
 if __name__ == "__main__":
     ventana = VentanaPrincipal()
