@@ -196,24 +196,30 @@ class VentanaFlujos():
         return json_flujos
 
     def construir(self):
+
         self.datos_json = self.cargar_json()
+        limite = math.ceil(len(self.datos_json.keys()) / 10)
+        print(limite, self.sector)
+        fila = 1
+        columna = 0
+        columna_max = limite - 1
+
         self.frame_f1 = Label(self.root, text='Flujos', font='arial 20 bold', width=30,
                               pady=50, bg=COLOR_TITULO, fg='white')
 
-        self.frame_f1.grid(row=0, column=0, columnspan=2)
+        self.frame_f1.grid(row=0, column=0, columnspan=limite)
         self.root.configure(background=COLOR_TITULO)
         limite = len(self.datos_json.keys())
-        fila = 1
-        columna = 0
+
         for f in self.datos_json.keys():
             self.e = Button(self.root, text=f, font='arial 12 bold',
-                                   padx=5, borderwidth=5,
+                                   padx=5, borderwidth=5, pady=5,
                                    width=15)
             self.e["command"] = lambda s = f: self.informar(s)
 
             self.e.grid(row=fila, column=columna)
 
-            if columna == 1:
+            if columna == columna_max:
                 columna = 0
                 fila += 1
             else:
@@ -227,7 +233,7 @@ class VentanaFlujos():
                 else:
                     extra = Label(self.root, text='\n', pady=5, bg=COLOR_TITULO)
                     extra.grid(row=fila, column=0)
-        self.grafico()
+        #self.grafico()
 
     def grafico(self):
         complejidadSectorSemana(self.sector)
@@ -461,7 +467,7 @@ class VentanaIndividual():
                 self.boton.grid(row=contador_filas, column=contador_columnas)
                 self.boton["command"] = lambda s = sector: self.siguiente(s)
 
-            if sector != 'LECMPAU' and sector != 'LECMCJI':
+            if sector != 'LECMPAU' and sector != 'LECMCJL':
                 self.boton["state"] = "disabled"
 
             self.botones.append(self.boton)
@@ -474,7 +480,7 @@ class VentanaIndividual():
 
         extra = Label(self.root, text='\n\n\n\n', bg=COLOR_TITULO)
         extra.grid(row=((len(self.sectores) // 3) + 2), column=0)
-        self.grafico()
+        #self.grafico()
 
     def grafico(self):
         impactoTodoSectoresAño()

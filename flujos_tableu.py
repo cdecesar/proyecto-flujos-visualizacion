@@ -8,7 +8,7 @@ from shapely.geometry import Polygon, LineString, Point
 
 SECTOR = input('Sector: ')
 FILES_PATH = str(pathlib.Path(__file__).parent.resolve())
-dimroute = pandas.read_csv('C:\\DATOS\\TRABAJO_CRIDA\\DATOS\\Flujos\\dimRouteClustered_R1I_R2I_SAN_PAU_CJI_BAS_CCC_2019.csv', delimiter=';')
+dimroute = pandas.read_csv(FILES_PATH + '\\dimRouteClustered_CJL_P2R_RNE_2019.csv', delimiter=';')
 csv = pandas.read_csv('C:\\DATOS\\TRABAJO_CRIDA\\Proyecto_Flujos\\Carpeta_CSV\\' + SECTOR + '_Final.csv', delimiter=',')
 flujo_antiguo = csv['routeKey']
 flightkey = csv['flightkey']
@@ -78,16 +78,17 @@ for i in asociacion_flujos.keys():
 
             if id[contador] == j and j not in dic.keys():
                 dic.update({j: []})
-                print('daleeee')
 
                 r = recorrido[contador]
                 primero = re.split('\(', r)
-
+                print(primero, primero[1])
                 segundo = re.split(',', primero[1])
+                print(segundo)
+
                 cont = 1
                 for k in segundo:
                     data = re.split(' ', k)
-                    print(data, len(data))
+                    print(data, len(data), '0000000000000000000')
                     if len(data) == 2:
                         if ')' not in data[1]:
                             lat = float(data[1])
@@ -99,7 +100,6 @@ for i in asociacion_flujos.keys():
                     else:
                         if ')' not in data[2]:
                             lat = float(data[2])
-
                             lon = float(data[1])
                         else:
                             lon = float(data[1])
@@ -120,8 +120,10 @@ for i in asociacion_flujos.keys():
 #%%
 
 for i in asociacion_flujos.keys():
-    print(i)
-    print(dic.get(i))
+    print(i, 'Longitud' + str(len(asociacion_flujos.get(i))))
+    for j in asociacion_flujos.get(i):
+        print(j)
+        print(dic.get(j))
     print('-----------------------------------------------------------------')
 
 #%%
@@ -138,7 +140,9 @@ for i in asociacion_flujos.keys():
     d[i] = l
 
 for i in d.keys():
-    print(d.get(i))
+    print(i)
+    for j in d.get(i):
+        print(j)
 
 print(len(d.keys()))
 #%%
